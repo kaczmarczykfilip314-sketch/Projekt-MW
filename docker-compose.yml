@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15 # Oficjalny obraz bazy danych
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: zbiorka_db
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/zbiorka_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    environment:
+      - BACKEND_URL=http://backend:8000
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
