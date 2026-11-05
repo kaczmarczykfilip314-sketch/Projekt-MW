@@ -8,7 +8,6 @@ DB_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db:5432/zbiorka_d
 
 @app.get("/api/zbiorki")
 def get_zbiorki():
-    # Połączenie backendu z bazą danych
     db_status = "Brak połączenia"
     try:
         conn = psycopg2.connect(DB_URL)
@@ -16,8 +15,6 @@ def get_zbiorki():
         conn.close()
     except Exception as e:
         db_status = f"Błąd bazy: {str(e)}"
-
-    # Zwracanie danych w formacie JSON
     return {
         "status_bazy": db_status,
         "zbiorki": [
