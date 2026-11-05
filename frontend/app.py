@@ -8,7 +8,6 @@ BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
 @app.route("/")
 def index():
     try:
-        # Frontend pobiera z backendu JSON
         response = requests.get(f"{BACKEND_URL}/api/zbiorki")
         data = response.json()
     except Exception as e:
