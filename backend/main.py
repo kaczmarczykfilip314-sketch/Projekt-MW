@@ -66,3 +66,36 @@ def get_zbiorka(zbiorka_id: int):
     if not row:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zbiórka nie została znaleziona")
     return {"id": row[0], "cel": row[1], "zebrano": float(row[2])}
+
+
+@app.post("/api/zbiorki", status_code=status.HTTP_201_CREATED)
+def create_zbiorka(payload: ZbiorkaIn):
+    conn = psycopg2.connect(DB_URL)
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO zbiorki (cel, zebrano) VALUES (%s, %s) RETURNING id, cel, zebrano;",
+        (payload.cel, payload.zebrano),
+    )
+    row = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+    return {"id": row[0], "cel": row[1], "zebrano": float(row[2])}
+
+
+
+@app.put("/api/zbiorki/{zbiorka_id}")
+def update_zbiorka(zbiorka_id: int, payload: ZbiorkaIn):
+    conn = psycopg2.connect(DB_URL)
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE zbiorki SET cel = %s, zebrano = %s WHERE id = %s RETURNING id, cel, zebrano;",
+        (payload.cel, payload.zebrano, zbiorka_id),
+    )
+    row = cur.fetchone()
+    conn.commit()
+    cur.close()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zbiórka nie została znaleziona")
+    return {"id": row[0], "cel": row[1], "zebrano": float(row[2])}
