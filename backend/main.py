@@ -32,7 +32,6 @@ def get_zbiorki():
         rows = cur.fetchall()
         zbiorki = [{"id": r[0], "cel": r[1], "zebrano": float(r[2])} for r in rows]
         cur.close()
-        db_status = "Pomyślnie połączono z PostgreSQL"
         conn.close()
     except Exception as e:
         db_status = f"Błąd bazy: {str(e)}"
@@ -41,7 +40,29 @@ def get_zbiorki():
         "zbiorki": zbiorki
     }
 
-
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    try:
+        conn = psycopg2.connect(DB_URL)
+        cur = conn.cursor()
+        cur.execute("SELECT 1;")
+        cur.close()
+        conn.close()
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Błąd połączenia z bazą: {str(e)}",
+        )
+        
+@app.get("/api/zbiorki/{zbiorka_id}")
+def get_zbiorka(zbiorka_id: int):
+    conn = psycopg2.connect(DB_URL)
+    cur = conn.cursor()
+    cur.execute("SELECT id, cel, zebrano FROM zbiorki WHERE id = %s;", (zbiorka_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zbiórka nie została znaleziona")
+    return {"id": row[0], "cel": row[1], "zebrano": float(row[2])}
