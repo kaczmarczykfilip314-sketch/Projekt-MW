@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+    <html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <title>Platforma Zbiórek Pieniędzy</title>
+        <style>body { font-family: Arial, sans-serif; padding: 20px; }</style>
+    </head>
+    <body>
+        <h1>Platforma Zbiórek Pieniędzy</h1>
+        <p><strong>Status bazy danych (info z backendu):</strong> {{ data.status_bazy }}</p>
+        
+        <h2>Aktywne zbiórki:</h2>
+        <ul>
+        {% for zbiorka in data.zbiorki %}
+            <li><strong>Cel:</strong> {{ zbiorka.cel }} | <strong>Zebrano:</strong> {{ zbiorka.zebrano }} PLN</li>
+        {% else %}
+            <li>Brak danych do wyświetlenia.</li>
+        {% endfor %}
+        </ul>
+        <script src="app.py"></script>
+    </body>
+    </html>
