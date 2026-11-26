@@ -31,6 +31,7 @@ def get_zbiorki():
         cur.execute("SELECT id, cel, zebrano FROM zbiorki ORDER BY id;")
         rows = cur.fetchall()
         zbiorki = [{"id": r[0], "cel": r[1], "zebrano": float(r[2])} for r in rows]
+        db_status = "Jest połączenie z bazą danych"
         cur.close()
         conn.close()
     except Exception as e:
