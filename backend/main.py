@@ -30,28 +30,3 @@ def get_zbiorki():
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
