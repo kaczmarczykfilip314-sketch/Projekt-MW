@@ -5,6 +5,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_DB: ${POSTGRES_DB:-zbiorka_db}
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./zbiorki.txt:/zbiorki.txt
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-zbiorka_db}"]
       interval: 5s
