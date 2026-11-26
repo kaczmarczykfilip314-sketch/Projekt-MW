@@ -22,3 +22,8 @@ def get_zbiorki():
             {"id": 2, "cel": "Odbudowa świetlicy", "zebrano": 5400}
         ]
     }
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
