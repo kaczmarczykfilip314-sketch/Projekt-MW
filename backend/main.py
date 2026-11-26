@@ -24,6 +24,7 @@ class ZbiorkaIn(BaseModel):
 @app.get("/api/zbiorki")
 def get_zbiorki():
     zbiorki = []
+    db_status = "Brak połączenia"
     try:
         conn = psycopg2.connect(DB_URL)
         cur = conn.cursor()
