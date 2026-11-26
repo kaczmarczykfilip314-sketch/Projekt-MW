@@ -1,32 +1,39 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: zbiorka_db
-      healthcheck:
-        test: ["CMD","pg_isready","-U"]
-        interval: 2s
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-zbiorka_db}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-zbiorka_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "5432:5432"
 
   backend:
     build: ./backend
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/zbiorka_db
+      DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@db:5432/zbiorka_db}
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     depends_on:
-      db: service_healthy
+      db:
+        condition: service_healthy
 
   frontend:
     build: ./frontend
     environment:
-      - BACKEND_URL=http://backend:8000
+      BACKEND_URL: ${BACKEND_URL:-http://backend:8000}
     ports:
       - "8080:8080"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
